@@ -1,0 +1,72 @@
+class <%= device_model %> < ActiveRecord::Base
+
+  ## 
+  # => +-----+--------+---------------------+--------------------+
+  #    | ... |user_id | bodytrace_device_id | imei_device_serial |
+  #    +-----+--------+---------------------+--------------------+
+  #    |     |        |                     |                    |
+  #    |     |        |                     |                    |
+  #    |     |        |                     |                    |
+  #    |     |        |                     |                    |
+  #    |     |        |                     |                    |
+  #    |     |        |                     |                    |
+  #    +-----+--------+---------------------+--------------------+
+  #              ^               ^
+  #              |               |
+  #        index , uniq         uniq
+  #
+  # Insertion: only @ 1 scenario: when linking user with a device.
+  # Updating:  only @ 1 scenario: when updating user with a device.
+  # Deleting:  only @ 1 scenario: when unlinking user with a device.
+  # Triggers: - @insertion:
+  #              get bodytrace measurement with the 'bodytrace_device_id' and if found update #                bodytrace_measurements.<%= user_model.underscore %>_id = 
+  #                self.<%= user_model.underscore %>_id
+  ##
+
+  validates :<%= user_model.underscore %>_id, presence: true
+  validates :imei_device_serial, presence: true
+  validates :imei_device_serial, length: { is: 15 }
+  validates :<%= user_model.underscore %>_id, :imei_device_serial, uniqueness: true
+
+  belongs_to :<%= user_model.underscore %>
+
+  before_save :normalize_imei_device_serial
+  after_save  :update_bodytrace_measurements
+  before_destroy :clear_bodytrace_measurements
+
+  ##
+  # => this method normalize the imei device serial (which used to link user with the bodyTrace device)
+  #     and saves the normalized number to "bodytrace_device_id"
+  # => the normalization proccess:
+  #     - removing any leading zeros.
+  #     - removing the last digit.
+  ##
+  private
+  def normalize_imei_device_serial
+    # converting to integer revmoving any leading zeros
+    # integer division by 10 removing the last digit.
+    self.bodytrace_device_id = (self.imei_device_serial.to_i)/10 
+  end
+
+  ##
+  # => this method traverse <%=  measurement_model.pluralize %>s with self device_id to set user_id
+  # => this scenario happens if BodyTrace sent requests before we link the user with the device
+  ##
+  private
+  def update_bodytrace_measurements
+    measurements = <%=  measurement_model %>.where(bodytrace_device_id: self.bodytrace_device_id)
+    measurements.each do |m|
+      m.<%= user_model.underscore %>_id = self.<%= user_model.underscore %>_id
+      m.save!
+    end
+  end
+
+  private
+  def clear_bodytrace_measurements
+    measurements = <%=  measurement_model %>.where(bodytrace_device_id: self.bodytrace_device_id)
+    measurements.each do |m|
+      m.<%= user_model.underscore %>_id = -1
+      m.save!
+    end
+  end
+end

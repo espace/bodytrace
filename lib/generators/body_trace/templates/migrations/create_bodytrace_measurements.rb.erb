@@ -1,0 +1,21 @@
+class Create<%= measurement_model.pluralize %> < ActiveRecord::Migration
+  def up
+    create_table :<%= measurement_model.underscore.pluralize %> do |t|
+      t.integer :bodytrace_device_id, :limit => 5
+      t.integer :unix_timestamp, :limit => 5
+      t.integer :battery_voltage
+      t.integer :signal_strength
+      t.integer :scale_unit, limit: 2
+      t.integer :grams
+      t.text :json_object
+      t.references :<%= user_model.underscore %>, index: true
+
+      t.timestamps
+    end
+  end
+
+  def down
+    drop_table :<%= measurement_model.underscore.pluralize %>  
+  end
+
+end

@@ -1,0 +1,99 @@
+class <%= measurement_model.pluralize %>Controller < ApplicationController
+
+  http_basic_authenticate_with name: 'body_trace', password: 'm345ur3m3n757r4c3b0dy'
+  skip_before_action :verify_authenticity_token
+
+  ##
+  # =>  This action catchs the HTTP POST request from "BodyTrac" server and parse the passed JSON object.
+  #
+  # => JSON structure is: {"deviceId":***,"ts":***,"batteryVoltage":***,"rssi":**,
+  # "values":{"unit":***,"weight":***}}
+  # where:  -deviceId : IMEI (without leading zeros and the last digit).
+  #         -ts: timestamp when the measurement was taken (milliseconds since UNIX Epoch, UTC)
+  #         -batteryVoltage: battery voltage (mV) - functional battery voltage range: 4.7-6.0 V (could go a little over 6.0 V)
+  #         -rssi: signal strength in (- dBm) - can be converted into "percentage" by this formula: min(0, max(1, (115 - rssi) / 52)) * 100
+  #         -values/unit: measurement unit the scale was in at the time of taking the measurement
+  #         -values/weight: weight value (in grams - regardless of unit)  
+  #         -values/tare: The tare value can be used to compensate for this calibration errors. 
+  #           It shows the difference between the zero point setting before the weigh-in and after. 
+  #           If it is greater than + 0.1 kg, that means that the scale was not stored on a flat surface and 
+  #           the value shown on the display (and sent as the weight value) was offset by the amount indicated in the tare value. 
+  #
+  #
+  # => Workflow:
+  #     - Getting the POST request with the Json params.
+  #     - Check if "values" hash exists if not: -log error & -send error email & respond with "422 - Unprocessable Entity"
+  #     - Check if "values" hash is empty: if empty: -it's a heartbeat message, if not it's a real request
+  #     - Check if any params is missing then: -log error & -send error email & respond with "422 - Unprocessable Entity"
+  #     - Check if "deviceId" is registered with a user.
+  #        => In case of "deviceId" Not Found:
+  #          - storing the request with the json params in <%= measurement_model %> with 
+  #             <%=user_model.underscore%>_id = nil
+  #          - make a comment on the request active_admin page, indicates that the "deviceId" 
+  #             hasn't registered user
+  #          - respond with "404 - NOT FOUND"
+  #        => In case of "deviceId" Found:
+  #          - check if "tare" value over "100" or under "-100" if true then adjust the weight.
+  #          - storing the request with the json params in <%= measurement_model %> with user_id = registered user_id
+  #          - respond with "200 - OK"
+  ##
+  
+  def create
+    I18n.locale = :en
+
+    unless request[:values].nil?
+
+      unless request[:values].empty? # checks it the request is a heartbeat message or not
+        user_id = -1
+        device = <%= device_model %>.find_by(bodytrace_device_id: request[:deviceId]) # check if device registered with a user or not?
+        user_id = device.<%= user_model.underscore %>.id unless device.nil? 
+
+        calculated_grams = request[:values][:weight] 
+
+        calculated_grams -= request[:values][:tare] if request[:values][:tare].to_i > 100 || request[:values][:tare].to_i < -100
+        
+        bodytrace_measurement = <%= measurement_model %>.new(bodytrace_device_id: request[:deviceId],
+         unix_timestamp: request[:ts], battery_voltage: request[:batteryVoltage],
+         signal_strength: request[:rssi], scale_unit: request[:values][:unit],
+         grams: calculated_grams, json_object: request.raw_post, <%= user_model.underscore %>_id: user_id)
+
+        begin 
+          bodytrace_measurement.save!
+          if user_id == -1 # render 404 if "devicId" not registered with a user, else render 200
+            render nothing: true, status: 404
+          else
+            render nothing: true, status: 200 
+          end
+        rescue StandardError => e # error in saving the request due to some params are missing
+          log_error request.raw_post, e
+        end
+
+      else # it's a heartbeat message
+        log_heartbeat_message(request.raw_post)
+      end
+
+    else # Values param which contains the wieght grams is missing so it's error 
+      log_error(request.raw_post, "\"Values\" param is missing!")
+    end        
+  end
+
+  ##
+  # => this method logs a given error in the console, and send error email with error message
+  # => params:
+  #     - params: POST request params.
+  #     - message: error_message printed in the email.
+  ##
+  private
+  def log_error params, message
+    logger.error "\n\n######## Can't save <%= measurement_model %> due to some missing params\n"+
+     "================\n#{params.inspect}\n Respond with [422 unprocessable entity] \n"+
+     "#{message}\n================\n"
+    render nothing: true, status: 422 # 422: The request was well-formed but was unable to be followed due to semantic errors
+  end
+
+  def log_heartbeat_message params
+    logger.info "\n\n######## recieved a heartbeat message\n"+
+     "================\n#{params.inspect}\n Respond with [200 OK]\n================\n"
+    render nothing: true, status: 204
+  end
+end

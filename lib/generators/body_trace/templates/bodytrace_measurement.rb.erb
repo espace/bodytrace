@@ -1,0 +1,40 @@
+class <%= measurement_model %> < ActiveRecord::Base
+  ## 
+  # => +-----+--------+---------------------+-----+
+  #    | ... |user_id | bodytrace_device_id | ... |
+  #    +-----+--------+---------------------+-----+
+  #    |     |        |                     |     |
+  #    |     |        |                     |     |
+  #    |     |        |                     |     |
+  #    |     |        |                     |     |
+  #    |     |        |                     |     |
+  #    |     |        |                     |     |
+  #    +-----+--------+---------------------+-----+
+  #                              ^ 
+  #                              |
+  #                            index
+  #
+  # Insertion: only @ 1 scenario: when getting POST request with json params.
+  # Updating:  no scenarios.
+  # Deleting:  no scenarios.
+  ##
+  validates :bodytrace_device_id, :unix_timestamp, :battery_voltage, 
+  :signal_strength, :scale_unit, :grams, presence: { message: "%{value}: is required and it's submitted as blank!" }
+  belongs_to :user
+
+  ##
+  # => the "no_assigned_user" scope fetches the bodytrace_measurement which it's 
+  #     "bodytrace_device_id" not owned by any user by checking if user_id IS NULL
+  ##
+  UNITS = ["kg", "lb", "st"]
+  scope :no_assigned_<%= user_model.underscore %>, -> { where('<%= user_model.underscore %>_id IS NULL') }
+
+  def <%= user_model.underscore %>
+    <%= user_model %>.find self.<%= user_model.underscore %>_id unless (<%= user_model.underscore %>_id == -1 || <%= user_model.underscore %>_id.nil?)
+  end
+
+  def scale_unit
+    UNITS[read_attribute(:scale_unit)]
+  end
+end
+

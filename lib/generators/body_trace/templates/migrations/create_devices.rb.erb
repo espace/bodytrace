@@ -1,0 +1,16 @@
+class Create<%= device_model.pluralize %> < ActiveRecord::Migration
+  def up
+    create_table :<%= device_model.underscore.pluralize %> do |t|
+      t.references :<%= user_model.underscore %>
+      t.integer :bodytrace_device_id, limit: 5, index: true
+      t.string :imei_device_serial
+
+      t.timestamps
+    end
+  end
+
+  def down
+    drop_table :<%= device_model.underscore.pluralize %>
+  end
+
+end
