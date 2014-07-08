@@ -1,4 +1,23 @@
+# == Schema Information
+#
+# Table name: bodytrace_measurements
+#
+#  id                  :integer          not null, primary key
+#  bodytrace_device_id :integer
+#  unix_timestamp      :integer
+#  battery_voltage     :integer
+#  signal_strength     :integer
+#  scale_unit          :integer
+#  grams               :integer
+#  json_object         :text
+#  user_id             :integer
+#  created_at          :datetime
+#  updated_at          :datetime
+#
+
+
 class <%= measurement_model %> < ActiveRecord::Base
+
   ## 
   # => +-----+--------+---------------------+-----+
   #    | ... |user_id | bodytrace_device_id | ... |
