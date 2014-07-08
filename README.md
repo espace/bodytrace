@@ -45,10 +45,10 @@ run:
 
 where:
 ####user_name [Required]:
-> http authentication user_name required to handle BodyTrace requests.
+> http authentication user_name required to parse BodyTrace requests.
 
 ####password [Required]:
-> http authentication password required to handle BodyTrace requests.
+> http authentication password required to parse BodyTrace requests.
 
 ####BodytraceMeasurement [Optional & default: BodytraceMeasurement]
 > Name of the model which will hold requests data comes from BodyTrace API.
@@ -84,7 +84,7 @@ and provide them with user_name and password you generated for HTTP basic authen
 
 ---
 
-###list of handeled Requests / Responses supported:
+###list of supported Requests / Responses :
 
  Request: # heartbeat message
   > {"deviceId":XXXXXXXXXXXXX,"ts":1391436314212,"batteryVoltage":5603,"rssi":80,"values":{}}
