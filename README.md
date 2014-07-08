@@ -4,7 +4,7 @@ BodyTrace
 BodyTrace is a Ruby gem enabling receiving and storing requests from [BodyTrace](http://bodytrace.com/medical/)'s digital scale:
 ![alt](http://bodytrace.com/img/scale.png)
 
-##Installation
+###Installation
 run:
 ```
     gem install bodytrace
@@ -14,7 +14,7 @@ or add to your Gemfile:
     gem 'bodytrace'
 ```
 
-##Usage
+###Usage
 this gem generate a platform to catch/store BodyTrace's digital scale POST requests in this format:
 >{"deviceId":XXXXXXXXXXXXX,"ts":1380562575798,"batteryVoltage":5522,"rssi":91,"values
 ":{"unit":1,"weight":69800,"tare":0}}
@@ -81,3 +81,55 @@ Provide [BodyTrace Team](http://www.bodytrace.com/contact.html) with a URL to [P
 [POST] sitename.com/bodytrace_measurements
 ```
 and provide them with user_name and password you generated for HTTP basic authentication.
+
+---
+
+###list of handeled Requests / Responses supported:
+
+ Request: # heartbeat message
+  > {"deviceId":XXXXXXXXXXXXX,"ts":1391436314212,"batteryVoltage":5603,"rssi":80,"values":{}}
+  
+Response: 
+  > 204 - No content
+
+---
+
+Request: # real error-free request
+  > {"deviceId":XXXXXXXXXXXXX,"ts":1380562575798,"batteryVoltage":5522,"rssi":91,"values":{"unit":1,"weight":69800}}
+  
+Response: 
+  > 200 - OK
+
+---------------
+
+Request: # receiving "deviceId" not registered with a user
+  > {"deviceId":XXXXXXXXXXXXX,"ts":1380562575798,"batteryVoltage":5522,"rssi":91,"values":{"unit":1,"weight":69800}
+  
+Response: 
+  > 404 - Not Found
+
+---------------
+
+Request: # missing parameter request, missing "deviceId"
+  > {"ts":1380562575798,"batteryVoltage":5522,"rssi":91,"values":{"unit":1,"weight":69800}}
+
+Response: 
+  > 422 - unprocessable entity
+
+---------------
+
+Request: # missing parameter request, missing "values" paramter
+  >{"deviceId":XXXXXXXXXXXXX,"ts":1380562575798,"batteryVoltage":5522,"rssi":91}}
+
+Response: 
+  > 422 - unprocessable entity
+
+---------------
+
+Request: # syntax-error in the request parameters, missing '}'
+  > {"deviceId":XXXXXXXXXXXXX,"ts":1380562575798,"batteryVoltage":5522,"rssi":91,"values":{"unit":1,"weight":69800}
+
+Response: 
+  > 400 - Bad Request
+
+---------------
