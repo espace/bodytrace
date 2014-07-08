@@ -28,8 +28,7 @@ Where:
 * batteryVoltage: battery voltage (mV) - functional battery voltage range: 4.7-6.0 V (could 
 go a little over 6.0 V)
 
-* rssi: signal strength in (- dBm) - can be converted into "percentage" by this formula: 
-min(0, max(1, (115 - rssi) / 52)) * 100
+* [rssi](http://en.wikipedia.org/wiki/Received_signal_strength_indication): signal strength in (- dBm) 
 
 * values/unit: measurement unit the scale was in at the time of taking the measurement
 
