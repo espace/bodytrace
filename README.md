@@ -40,7 +40,7 @@ min(0, max(1, (115 - rssi) / 52)) * 100
 
 run:
 ```
-    rails g body_trace:install user_name password BodytraceMeasurement Device User
+rails g body_trace:install user_name password BodytraceMeasurement Device User
 ```
 
 where:
@@ -71,10 +71,14 @@ this will generate:
 
 ```
 
-
+---
+Then run:
+```
+rake db:migrate
+```
 ---
 
-Then:
+And finally:
 
 Provide [BodyTrace Team](http://www.bodytrace.com/contact.html) with a URL to [POST] Requests on it. In above example URL will be:
 ```
