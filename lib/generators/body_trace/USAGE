@@ -1,5 +1,5 @@
 Description:
-    BodyTrace is a Ruby gem enabling receiving and storing requests from BodyTrace's Digital Scale.
+    BodyTrace is a Ruby gem enabling receiving and storing requests from BodyTrace's Digital Scale. See more at "https://github.com/maboelnour/bodytrace"
 
 Example:
     rails generate body_trace:install user_name password BodytraceMeasurement Device User 
