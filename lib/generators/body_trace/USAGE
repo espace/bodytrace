@@ -1,8 +1,5 @@
 Description:
-    Explain the generator
+    BodyTrace is a Ruby gem enabling receiving and storing requests from BodyTrace's Digital Scale.
 
 Example:
-    rails generate body_trace Thing
-
-    This will create:
-        what/will/it/create
+    rails generate body_trace:install user_name password BodytraceMeasurement Device User 

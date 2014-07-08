@@ -3,6 +3,8 @@ module BodyTrace
     include Rails::Generators::Migration
 
     source_root File.expand_path('../templates', __FILE__)
+    argument :user_name, type: :string
+    argument :password, type: :string
     argument :measurement_model, type: :string, default: "BodytraceMeasurement"
     argument :device_model, type: :string, default: "Device"
     argument :user_model, type: :string, default: "User"
