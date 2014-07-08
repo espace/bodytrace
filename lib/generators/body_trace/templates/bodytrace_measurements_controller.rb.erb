@@ -1,6 +1,6 @@
 class <%= measurement_model.pluralize %>Controller < ApplicationController
 
-  http_basic_authenticate_with name: <%= user_name %>, password: <%= password %>
+  http_basic_authenticate_with name: "<%= user_name %>", password: "<%= password %>"
   skip_before_action :verify_authenticity_token
 
   ##
