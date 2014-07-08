@@ -11,7 +11,7 @@ run:
 ```
 or add to your Gemfile:
 ```
-    gem bodytrace
+    gem 'bodytrace'
 ```
 
 ##Usage
@@ -21,7 +21,7 @@ this gem generate a platform to catch/store BodyTrace's digital scale POST reque
 
 Where:
 
-* deviceId: IMEI serial number (without leading zeros and the last digit)
+* deviceId: [IMEI](http://en.wikipedia.org/wiki/International_Mobile_Station_Equipment_Identity) serial number (without leading zeros and the last digit)
 
 * ts: timestamp when the measurement was taken represented in milliseconds since UNIX Epoch, UTC
 
@@ -40,24 +40,25 @@ min(0, max(1, (115 - rssi) / 52)) * 100
 
 run:
 ```
-    rails g body_trace:install BodytraceMeasurement Device User user_name password
+    rails g body_trace:install user_name password BodytraceMeasurement Device User
 ```
 
 where:
-####BodytraceMeasurement :
-> Name of the model which will hold requests data comes from BodyTrace API.
-
-####Device:
-> Name of the model which will hold information about "which user uses which scale device"
-
-####User:
-> Name of already existing "user" model that will be used to link with a scale device.
-
-####user_name:
+####user_name [Required]:
 > http authentication user_name required to handle BodyTrace requests.
 
-####password:
+####password [Required]:
 > http authentication password required to handle BodyTrace requests.
+
+####BodytraceMeasurement [Optional & default: BodytraceMeasurement]
+> Name of the model which will hold requests data comes from BodyTrace API.
+
+####Device  [Optional & default: Device]:
+> Name of the model which will hold information about "which user uses which scale device"
+
+####User [Optional & default: User]:
+> Name of already existing "user" model that will be used to link with a scale device.
+
 
 this will generate:
 ```
