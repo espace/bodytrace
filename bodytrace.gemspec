@@ -2,7 +2,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = "bodytrace"
-  s.version       = "1.1.1"
+  s.version       = "1.2.1"
   s.platform      = "ruby"
   s.authors       = ["Mohammad Aboelnour"]
   s.email         = ["mhm.aboelnour@gmail.com"]
