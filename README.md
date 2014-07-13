@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/bodytrace.svg)](http://badge.fury.io/rb/bodytrace)
+
 BodyTrace
 =========
 
