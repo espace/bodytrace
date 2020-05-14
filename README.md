@@ -6,7 +6,7 @@ BodyTrace
 BodyTrace is a Ruby gem enabling receiving and storing requests from [BodyTrace](http://bodytrace.com/medical/)'s digital scale:
 ![alt](http://bodytrace.com/img/scale.png)
 
-###Installation
+### Installation
 run:
 ```
     gem install bodytrace
@@ -16,7 +16,7 @@ or add to your Gemfile:
     gem 'bodytrace'
 ```
 
-###Usage
+### Usage
 this gem generate a platform to catch/store BodyTrace's digital scale POST requests in this format:
 >{"deviceId":XXXXXXXXXXXXX,"ts":1380562575798,"batteryVoltage":5522,"rssi":91,"values
 ":{"unit":1,"weight":69800,"tare":0}}
@@ -45,19 +45,19 @@ rails g body_trace:install user_name password BodytraceMeasurement Device User
 ```
 
 where:
-####user_name [Required]:
+#### user_name [Required]:
 > http authentication user_name required to parse BodyTrace requests.
 
-####password [Required]:
+#### password [Required]:
 > http authentication password required to parse BodyTrace requests.
 
-####BodytraceMeasurement [Optional & default: BodytraceMeasurement]
+#### BodytraceMeasurement [Optional & default: BodytraceMeasurement]
 > Name of the model which will hold requests data comes from BodyTrace API.
 
-####Device  [Optional & default: Device]:
+#### Device  [Optional & default: Device]:
 > Name of the model which will hold information about "which user uses which scale device"
 
-####User [Optional & default: User]:
+#### User [Optional & default: User]:
 > Name of already existing "user" model that will be used to link with a scale device.
 
 
@@ -89,7 +89,7 @@ and provide them with user_name and password you generated for HTTP basic authen
 
 ---
 
-###list of supported Requests / Responses :
+### list of supported Requests / Responses :
 
  Request: # heartbeat message
   > {"deviceId":XXXXXXXXXXXXX,"ts":1391436314212,"batteryVoltage":5603,"rssi":80,"values":{}}
